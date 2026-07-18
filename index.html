@@ -179,7 +179,7 @@
     </header>
 
     <div class="viewer-container">
-        <!-- Defaults to the local Birthday Cake file -->
+        <!-- Defaults to the local Birthday Cake file path -->
         <model-viewer 
             id="menu-viewer"
             src="./3d model/Birthday_Cake.glb" 
@@ -217,18 +217,23 @@
         © 2026 New Indian Bakery Coonoor. Powered by WebAR Experience.
     </footer>
 
-    <!-- Script to handle switching items smoothly -->
+    <!-- Script to handle switching items seamlessly with formatting overrides -->
     <script>
         const menuData = {
             birthday: {
                 title: "Premium Birthday Cake",
                 desc: "Our iconic customization model. Experience the pristine frosting details, vibrant color accents, and precise scaling right on your tabletop before finalizing your special celebration order.",
-                url: "./3d model/Birthday_Cake.glb"
+                url: "./3d model/Birthday_Cake.glb",
+                scale: "1 1 1",
+                center: "auto"
             },
             christmas: {
                 title: "Traditional Nilgiri Christmas Plum Cake",
                 desc: "Baked using rich, weeks-long spiced fruit macerations. View the festive design and elegant contours in full 3D, bringing a time-honored Coonoor winter legacy into your space.",
-                url: "./3d model/Christmas_cake.glb"
+                url: "./3d model/Christmas_cake.glb",
+                // Adjust values below if the Christmas file looks misaligned relative to the birthday cake
+                scale: "1 1 1", 
+                center: "0m 0m 0m" 
             }
         };
 
@@ -238,12 +243,19 @@
             const descEl = document.getElementById('item-desc');
             const data = menuData[itemKey];
 
-            // Update model source paths and text fields
+            // Update model sources and geometry parameters
             viewer.src = data.url;
+            viewer.scale = data.scale;
+            viewer.style.modelCenter = data.center;
+            
+            // Update textual elements
             titleEl.textContent = data.title;
             descEl.textContent = data.desc;
 
-            // Manage button selection highlight states
+            // Forces camera system to adjust layout safely
+            viewer.jumpToGoal();
+
+            // Manage active styles across buttons
             document.querySelectorAll('.selector-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
