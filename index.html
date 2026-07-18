@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Indian Bakery Coonoor - Interactive 3D Showcase</title>
+    <title>New Indian Bakery Coonoor - Premium Cake Showcase</title>
     
     <!-- Import Google Model Viewer Component -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
@@ -54,7 +54,7 @@
         .viewer-container {
             width: 90%;
             max-width: 500px;
-            height: 45vh;
+            height: 48vh;
             margin-top: 20px;
             background: white;
             border-radius: 20px;
@@ -73,52 +73,54 @@
             width: 85%;
             max-width: 460px;
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
             padding: 0 10px;
-            min-height: 100px; /* Prevents layout shifting when swapping text */
+            min-height: 110px;
         }
 
         .menu-details h2 {
             margin: 0 0 8px 0;
             color: var(--primary-color);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
 
         .menu-details p {
             margin: 0 0 15px 0;
             color: #6c757d;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             line-height: 1.4;
         }
 
-        /* Item Selection Grid */
-        .item-selector-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+        /* Two Item Selector Buttons styling */
+        .item-selector-container {
+            display: flex;
+            gap: 15px;
             width: 90%;
             max-width: 460px;
-            margin-top: 10px;
+            margin-top: 5px;
             padding: 10px 0;
         }
 
         .selector-btn {
+            flex: 1;
             background-color: white;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 10px 5px;
-            font-size: 0.8rem;
+            border-radius: 14px;
+            padding: 14px 10px;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-dark);
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .selector-btn.active {
             border-color: var(--primary-color);
             background-color: #e8f5e9;
             color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(27, 67, 50, 0.15);
         }
 
         /* Custom AR Button Floating on the 3D Viewer */
@@ -162,8 +164,8 @@
 
         footer {
             margin-top: auto;
-            padding: 15px;
-            font-size: 0.7rem;
+            padding: 20px;
+            font-size: 0.75rem;
             color: #adb5bd;
             text-align: center;
         }
@@ -177,11 +179,11 @@
     </header>
 
     <div class="viewer-container">
-        <!-- Initial source is set to the Danish Pastry -->
+        <!-- Defaults to the local Birthday Cake file -->
         <model-viewer 
             id="menu-viewer"
-            src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/DanishPastry/glTF-Binary/DanishPastry.glb" 
-            alt="Interactive 3D Bakery Item" 
+            src="./3d model/Birthday_Cake.glb" 
+            alt="Interactive 3D Celebration Cake" 
             ar 
             ar-modes="webxr scene-viewer quick-look" 
             camera-controls 
@@ -201,66 +203,47 @@
 
     <!-- Product Text Descriptions -->
     <div class="menu-details">
-        <h2 id="item-title">Traditional Coonoor Varkey (Concept)</h2>
-        <p id="item-desc">A spatial showcase representing our signature flaky layers. Nationwide digital clients can visually review the golden baking texture right on their home tablet or kitchen table.</p>
+        <h2 id="item-title">Premium Birthday Cake</h2>
+        <p id="item-desc">Our iconic customization model. Experience the pristine frosting details, vibrant color accents, and precise scaling right on your tabletop before finalizing your special celebration order.</p>
     </div>
 
-    <!-- Dynamic Menu Controls -->
-    <div class="item-selector-grid">
-        <button class="selector-btn active" onclick="switchItem('pastry', this)">🥖 Varkey Style</button>
-        <button class="selector-btn" onclick="switchItem('cake', this)">🍰 Mousse Slice</button>
-        <button class="selector-btn" onclick="switchItem('donut', this)">🍩 Glazed Donut</button>
-        <button class="selector-btn" onclick="switchItem('cannoli', this)">🥐 Cream Roll</button>
-        <button class="selector-btn" onclick="switchItem('sundae', this)">🍨 Ice Cream</button>
+    <!-- Two-Button Dynamic Switcher -->
+    <div class="item-selector-container">
+        <button class="selector-btn active" onclick="switchItem('birthday', this)">🎂 Birthday Cake</button>
+        <button class="selector-btn" onclick="switchItem('christmas', this)">🎄 Christmas Cake</button>
     </div>
 
     <footer>
         © 2026 New Indian Bakery Coonoor. Powered by WebAR Experience.
     </footer>
 
-    <!-- Script to handle switching items seamlessly -->
+    <!-- Script to handle switching items smoothly -->
     <script>
         const menuData = {
-            pastry: {
-                title: "Traditional Coonoor Varkey (Concept)",
-                desc: "A spatial showcase representing our signature flaky layers. Nationwide digital clients can visually review the golden baking texture right on their home tablet or kitchen table.",
-                url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/DanishPastry/glTF-Binary/DanishPastry.glb"
+            birthday: {
+                title: "Premium Birthday Cake",
+                desc: "Our iconic customization model. Experience the pristine frosting details, vibrant color accents, and precise scaling right on your tabletop before finalizing your special celebration order.",
+                url: "./3d model/Birthday_Cake.glb"
             },
-            cake: {
-                title: "Signature Mirror-Glaze Cake",
-                desc: "A premium sliced mousse creation featuring perfectly smooth glazes and structured inner sponge layers. Designed for luxury destination event pre-orders.",
-                url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CakeSlice/glTF-Binary/CakeSlice.glb"
-            },
-            donut: {
-                title: "Vibrant Glazed Donut",
-                desc: "Classic ring donut layer decorated with a soft pink strawberry glaze coat and colored confectionery toppings. A hit for modern tourist kids' boxes.",
-                url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Donut/glTF-Binary/Donut.glb"
-            },
-            cannoli: {
-                title: "Crispy Cream Roll",
-                desc: "Fried pastry shell casing stuffed with a dense sweet cream core. Showcases hard crisp shell details paired alongside soft whipped structures.",
-                url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Cannoli/glTF-Binary/Cannoli.glb"
-            },
-            sundae: {
-                title: "Layered Ice Cream Sundae",
-                desc: "Deluxe cold confection setup complete with syrup drizzles, fruit garnish, and wafer additions. Highlights high-fidelity glass transparency limits.",
-                url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/IceCream/glTF-Binary/IceCream.glb"
+            christmas: {
+                title: "Traditional Nilgiri Christmas Plum Cake",
+                desc: "Baked using rich, weeks-long spiced fruit macerations. View the festive design and elegant contours in full 3D, bringing a time-honored Coonoor winter legacy into your space.",
+                url: "./3d model/Christmas_cake.glb"
             }
         };
 
         function switchItem(itemKey, buttonElement) {
-            // 1. Get the target elements
             const viewer = document.getElementById('menu-viewer');
             const titleEl = document.getElementById('item-title');
             const descEl = document.getElementById('item-desc');
             const data = menuData[itemKey];
 
-            // 2. Update model and details smoothly
+            // Update model source paths and text fields
             viewer.src = data.url;
             titleEl.textContent = data.title;
             descEl.textContent = data.desc;
 
-            // 3. Update active visual states on menu selection buttons
+            // Manage button selection highlight states
             document.querySelectorAll('.selector-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
