@@ -117,6 +117,25 @@ border-color: #fff;
 transform: scale(1.05);
 }
 
+/* 3D Hotspot Real-Time Text Badge Anchored to Top of Cake */
+.cake-top-text-hotspot {
+display: none;
+background: rgba(255, 248, 231, 0.92);
+color: #3c1405;
+border: 2px solid #d35400;
+padding: 8px 16px;
+border-radius: 20px;
+font-weight: bold;
+font-size: 14px;
+font-family: 'Georgia', serif;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+pointer-events: none;
+transform: translate3d(-50%, -50%, 0);
+white-space: nowrap;
+backdrop-filter: blur(4px);
+transition: all 0.2s ease;
+}
+
 .details{
 width:90%;
 max-width:500px;
@@ -284,6 +303,15 @@ View in Your Space
   <button class="ar-weight-btn" onclick="changeWeight('3kg', this)">3 kg</button>
 </div>
 
+<!-- 3D Hotspot Anchored to Top Center of Cake Mesh -->
+<div slot="hotspot-cake-top" 
+     class="cake-top-text-hotspot" 
+     id="cakeTextBadge" 
+     data-position="0 0.18 0" 
+     data-normal="0 1 0">
+  Happy Birthday!
+</div>
+
 </model-viewer>
 
 </div>
@@ -332,7 +360,6 @@ Order on WhatsApp
 
 <script>
 
-// Scale mapping reduced by 60% overall across all sizes:
 const scales = {
   "1kg": { scale: "0.4 0.4 0.4", multiplier: 1.0 },
   "2kg": { scale: "0.504 0.504 0.504", multiplier: 1.8 },
@@ -345,22 +372,19 @@ const cakes = {
     desc: "Experience our delicious premium birthday cake in interactive 3D. Place it on your table in real physical size using Augmented Reality.",
     basePrice: 799,
     glb: "./3d model/BirthdayCake1.glb",
-    usdz: "./3d model/BirthdayCake1.usdz",
-    icingColor: "#fff8e7" // Creamy Vanilla Icing
+    usdz: "./3d model/BirthdayCake1.usdz"
   },
   2: {
     title: "Chocolate Celebration Cake",
     desc: "Rich chocolate premium cake with elegant decorations. View it in 1:1 real scale on your table before placing your order.",
     basePrice: 999,
     glb: "./3d model/BirthdayCake2.glb",
-    usdz: "./3d model/BirthdayCake2.usdz",
-    icingColor: "#ffecd1" // Golden Cream Icing for Chocolate
+    usdz: "./3d model/BirthdayCake2.usdz"
   }
 };
 
 let currentCakeId = 1;
 let currentWeight = "1kg";
-let originalTextures = {}; // Store original 3D textures to preserve realistic colors
 
 function updatePriceAndLink() {
   const cake = cakes[currentCakeId];
@@ -378,102 +402,18 @@ function updatePriceAndLink() {
   document.getElementById("whatsappLink").href = `https://wa.me/919999999999?text=${encodeURIComponent(whatsappText)}`;
 }
 
-// Real-Texture Top-Cap Piping Engine
-async function updateMessageOnCakeTop() {
+// Guaranteed Instant Real-Time 3D Anchor Text
+function updateMessageOnCakeTop() {
   updatePriceAndLink();
 
   const text = document.getElementById("cakeMessage").value.trim();
-  const viewer = document.getElementById("viewer");
+  const badge = document.getElementById("cakeTextBadge");
 
-  if (!viewer.model || !viewer.model.materials || viewer.model.materials.length === 0) return;
-
-  const currentCake = cakes[currentCakeId];
-  
-  // Find top material (or target primary base material)
-  const topMaterial = viewer.model.materials.find(m => m.name.toLowerCase().includes("top") || m.name.toLowerCase().includes("icing") || m.name.toLowerCase().includes("frosting")) || viewer.model.materials[0];
-
-  if (!topMaterial || !topMaterial.pbrMetallicRoughness) return;
-
-  // Cache base texture so real model colors are never lost
-  if (!originalTextures[currentCakeId]) {
-    originalTextures[currentCakeId] = topMaterial.pbrMetallicRoughness.baseColorTexture ? topMaterial.pbrMetallicRoughness.baseColorTexture.texture : null;
-  }
-
-  // If input is empty, restore pure original realistic 3D texture
-  if (!text) {
-    if (originalTextures[currentCakeId]) {
-      topMaterial.pbrMetallicRoughness.baseColorTexture.setTexture(originalTextures[currentCakeId]);
-    }
-    return;
-  }
-
-  // Create High-Res 2K Canvas
-  const canvas = document.createElement("canvas");
-  canvas.width = 2048;
-  canvas.height = 2048;
-  const ctx = canvas.getContext("2d");
-
-  // Create Base Image from original texture to preserve real color depth
-  const baseImg = new Image();
-  const originalTextureUrl = topMaterial.pbrMetallicRoughness.baseColorTexture ? topMaterial.pbrMetallicRoughness.baseColorTexture.texture.source.uri : null;
-
-  const drawTextOnTop = () => {
-    // 1. Draw original real-color background texture if available
-    if (originalTextureUrl && baseImg.complete && baseImg.width > 0) {
-      ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
-    }
-
-    // 2. Position Text EXCLUSIVELY on the center top circle (Top UV Area: Y ~ 25% - 40%)
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height * 0.32; // Targets the top-face UV mapping zone
-
-    ctx.save();
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    // Dynamic Font Sizing based on string length
-    let fontSize = 90;
-    if (text.length > 15) fontSize = 70;
-    if (text.length > 22) fontSize = 55;
-
-    ctx.font = `bold ${fontSize}px "Georgia", "Times New Roman", serif`;
-
-    // 3. Real 3D Cream/Chocolate Piping Effect (Multi-Layer Shadows + Bevel)
-    // Dark Shadow (Sinks text into icing)
-    ctx.shadowColor = "rgba(40, 15, 5, 0.65)";
-    ctx.shadowBlur = 15;
-    ctx.shadowOffsetX = 4;
-    ctx.shadowOffsetY = 6;
-
-    // Outer Cream Piping Stroke
-    ctx.strokeStyle = "rgba(60, 20, 5, 0.8)";
-    ctx.lineWidth = 10;
-    ctx.strokeText(text, centerX, centerY);
-
-    // Inner Cream Fill (Photorealistic Piping Color)
-    ctx.shadowColor = "transparent";
-    ctx.fillStyle = currentCake.icingColor;
-    ctx.fillText(text, centerX, centerY);
-
-    // Subtle Highlight for 3D Cream Gloss
-    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-    ctx.fillText(text, centerX - 2, centerY - 2);
-
-    ctx.restore();
-
-    // 4. Inject back into model-viewer
-    const dataUrl = canvas.toDataURL("image/png");
-    viewer.createTexture(dataUrl).then(texture => {
-      topMaterial.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-    });
-  };
-
-  if (originalTextureUrl) {
-    baseImg.crossOrigin = "anonymous";
-    baseImg.src = originalTextureUrl;
-    baseImg.onload = drawTextOnTop;
+  if (text.length > 0) {
+    badge.innerText = text;
+    badge.style.display = "block";
   } else {
-    drawTextOnTop();
+    badge.style.display = "none";
   }
 }
 
@@ -515,13 +455,6 @@ function changeWeight(weight, btn) {
 
   updatePriceAndLink();
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-  const viewer = document.getElementById("viewer");
-  viewer.addEventListener("load", () => {
-    updateMessageOnCakeTop();
-  });
-});
 
 </script>
 
