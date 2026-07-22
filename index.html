@@ -67,7 +67,7 @@ background:white;
 transition: opacity 0.2s ease-in-out;
 }
 
-/* Base AR Button */
+/* Base AR Launch Button */
 #ar-button{
 position:absolute;
 left:50%;
@@ -86,7 +86,7 @@ box-shadow:0 4px 10px rgba(0,0,0,.25);
 z-index: 10;
 }
 
-/* Floating AR Controls Inside Web & AR view */
+/* Floating Overlay Buttons inside WebXR AR Mode */
 .ar-weight-controls {
 position: absolute;
 top: 15px;
@@ -98,21 +98,22 @@ z-index: 10;
 }
 
 .ar-weight-btn {
-background: rgba(27, 67, 50, 0.85);
+background: rgba(27, 67, 50, 0.88);
 color: white;
-border: 1px solid rgba(255, 255, 255, 0.4);
-padding: 8px 14px;
+border: 1px solid rgba(255, 255, 255, 0.5);
+padding: 10px 16px;
 border-radius: 20px;
 font-size: 13px;
 font-weight: bold;
 cursor: pointer;
-backdrop-filter: blur(4px);
+backdrop-filter: blur(6px);
 transition: all 0.2s ease;
+box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .ar-weight-btn.active {
 background: #d35400;
-border-color: white;
+border-color: #fff;
 transform: scale(1.05);
 }
 
@@ -135,13 +136,12 @@ line-height:1.7;
 color:#555;
 }
 
-/* Section Titles */
 .section-label {
-font-size: 14px;
+font-size: 13px;
 font-weight: bold;
 color: #1b4332;
 margin-top: 15px;
-margin-bottom: 8px;
+margin-bottom: 6px;
 text-transform: uppercase;
 letter-spacing: 1px;
 }
@@ -222,10 +222,6 @@ font-size:24px;
 .details h2{
 font-size:22px;
 }
-
-.selector{
-flex-direction:row;
-}
 }
 
 </style>
@@ -253,14 +249,15 @@ exposure="1"
 environment-image="neutral"
 scale="1 1 1"
 ar
-ar-modes="scene-viewer quick-look webxr">
+ar-modes="webxr quick-look scene-viewer"
+ar-scale="fixed">
 
-<!-- AR Mode Button -->
+<!-- Native AR Trigger -->
 <button slot="ar-button" id="ar-button">
 View in Your Space
 </button>
 
-<!-- Floating Weight Switcher Buttons (Visible on 3D Viewer & AR) -->
+<!-- UI Controls Overlaid Directly On AR Camera Screen -->
 <div class="ar-weight-controls">
   <button class="ar-weight-btn active" onclick="changeWeight('1kg', this)">1 kg</button>
   <button class="ar-weight-btn" onclick="changeWeight('2kg', this)">2 kg</button>
@@ -277,18 +274,18 @@ View in Your Space
 
 <p id="cakeDesc">
 Experience our delicious premium birthday cake in interactive 3D. 
-Rotate, zoom and place it in your own space using Augmented Reality before ordering.
+Rotate, zoom and place it on your table in real physical size using Augmented Reality.
 </p>
 
-<!-- Weight Selector -->
-<div class="section-label">Select Size</div>
+<!-- Size Selection -->
+<div class="section-label">Select Weight</div>
 <div class="selector weight-selector">
   <button class="weight-btn active" onclick="changeWeight('1kg', this)">1 kg</button>
   <button class="weight-btn" onclick="changeWeight('2kg', this)">2 kg</button>
   <button class="weight-btn" onclick="changeWeight('3kg', this)">3 kg</button>
 </div>
 
-<!-- Cake Type Selector -->
+<!-- Flavor Selection -->
 <div class="section-label">Select Flavor</div>
 <div class="selector cake-selector">
   <button class="cake-btn active" onclick="changeCake(1, this)">🎂 Birthday Cake 1</button>
@@ -309,24 +306,24 @@ Order on WhatsApp
 
 <script>
 
-// Scale definitions & price multipliers
+// Absolute physical scale factors (1kg = 1.0, 2kg = 1.26x volumetric scale, 3kg = 1.44x volumetric scale)
 const scales = {
   "1kg": { scale: "1 1 1", multiplier: 1.0 },
-  "2kg": { scale: "1.25 1.25 1.25", multiplier: 1.8 },
-  "3kg": { scale: "1.45 1.45 1.45", multiplier: 2.5 }
+  "2kg": { scale: "1.26 1.26 1.26", multiplier: 1.8 },
+  "3kg": { scale: "1.44 1.44 1.44", multiplier: 2.5 }
 };
 
 const cakes = {
   1: {
     title: "Premium Birthday Cake",
-    desc: "Experience our delicious premium birthday cake in interactive 3D. Rotate, zoom and place it in your own space using Augmented Reality before ordering.",
+    desc: "Experience our delicious premium birthday cake in interactive 3D. Place it on your table in real physical size using Augmented Reality.",
     basePrice: 799,
     glb: "./3d model/BirthdayCake1.glb",
     usdz: "./3d model/BirthdayCake1.usdz"
   },
   2: {
     title: "Chocolate Celebration Cake",
-    desc: "Rich chocolate premium cake with elegant decorations. View it in full 3D and place it on your table using AR before placing your order.",
+    desc: "Rich chocolate premium cake with elegant decorations. View it in 1:1 real scale on your table before placing your order.",
     basePrice: 999,
     glb: "./3d model/BirthdayCake2.glb",
     usdz: "./3d model/BirthdayCake2.usdz"
@@ -343,7 +340,6 @@ function updatePriceAndLink() {
 
   document.getElementById("cakePrice").innerHTML = `₹${finalPrice}`;
 
-  // Update WhatsApp text message automatically
   const message = encodeURIComponent(`Hi, I would like to order ${currentWeight} of ${cake.title} (₹${finalPrice}).`);
   document.getElementById("whatsappLink").href = `https://wa.me/919999999999?text=${message}`;
 }
@@ -374,10 +370,10 @@ function changeWeight(weight, btn) {
   currentWeight = weight;
   const viewer = document.getElementById("viewer");
 
-  // Apply real-world physical scale multiplier to 3D model
+  // Force physical 1:1 real-world size change
   viewer.setAttribute("scale", scales[weight].scale);
 
-  // Sync active states across both bottom buttons and overlay AR buttons
+  // Synchronize state across normal UI buttons and AR floating buttons
   document.querySelectorAll(".weight-btn, .ar-weight-btn").forEach(b => {
     if (b.innerText.toLowerCase().replace(/\s/g, '') === weight) {
       b.classList.add("active");
@@ -389,23 +385,11 @@ function changeWeight(weight, btn) {
   updatePriceAndLink();
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  const viewer = document.getElementById("viewer");
-
-  viewer.addEventListener("load", function() {
-    console.log("3D Model loaded successfully.");
-  });
-
-  viewer.addEventListener("error", function() {
-    console.error("Unable to load 3D model. Please verify file paths.");
-  });
-});
-
 </script>
 
 <footer>
 © 2026 New Indian Bakery, Coonoor • Premium Cake AR Experience
-</footer> 
+</footer>
 
 </body>
 </html>
