@@ -264,8 +264,8 @@ ios-src="./3d model/BirthdayCake1.usdz"
 alt="Birthday Cake"
 camera-controls
 auto-rotate
-shadow-intensity="1"
-exposure="1"
+shadow-intensity="1.5"
+exposure="1.1"
 environment-image="neutral"
 scale="0.4 0.4 0.4"
 ar
@@ -312,10 +312,10 @@ Rotate, zoom and place it on your table in real physical size using Augmented Re
   <button class="cake-btn" onclick="changeCake(2, this)">🎂 Birthday Cake 2</button>
 </div>
 
-<!-- Custom Text on Cake -->
-<div class="section-label">Message on Cake</div>
+<!-- Custom Text on Cake Top -->
+<div class="section-label">Message on Top of Cake</div>
 <div class="cake-message-box">
-  <input type="text" id="cakeMessage" placeholder="e.g. Happy Birthday Nishanth!" maxlength="30" oninput="updateMessageOnCake()">
+  <input type="text" id="cakeMessage" placeholder="e.g. Happy Birthday Nishanth!" maxlength="28" oninput="updateMessageOnCakeTop()">
 </div>
 
 <div class="price" id="cakePrice">
@@ -333,9 +333,6 @@ Order on WhatsApp
 <script>
 
 // Scale mapping reduced by 60% overall across all sizes:
-// 1kg Base: 0.4 0.4 0.4
-// 2kg (1.26x): 0.504 0.504 0.504
-// 3kg (1.44x): 0.576 0.576 0.576
 const scales = {
   "1kg": { scale: "0.4 0.4 0.4", multiplier: 1.0 },
   "2kg": { scale: "0.504 0.504 0.504", multiplier: 1.8 },
@@ -348,19 +345,22 @@ const cakes = {
     desc: "Experience our delicious premium birthday cake in interactive 3D. Place it on your table in real physical size using Augmented Reality.",
     basePrice: 799,
     glb: "./3d model/BirthdayCake1.glb",
-    usdz: "./3d model/BirthdayCake1.usdz"
+    usdz: "./3d model/BirthdayCake1.usdz",
+    icingColor: "#fff8e7" // Creamy Vanilla Icing
   },
   2: {
     title: "Chocolate Celebration Cake",
     desc: "Rich chocolate premium cake with elegant decorations. View it in 1:1 real scale on your table before placing your order.",
     basePrice: 999,
     glb: "./3d model/BirthdayCake2.glb",
-    usdz: "./3d model/BirthdayCake2.usdz"
+    usdz: "./3d model/BirthdayCake2.usdz",
+    icingColor: "#ffecd1" // Golden Cream Icing for Chocolate
   }
 };
 
 let currentCakeId = 1;
 let currentWeight = "1kg";
+let originalTextures = {}; // Store original 3D textures to preserve realistic colors
 
 function updatePriceAndLink() {
   const cake = cakes[currentCakeId];
@@ -372,55 +372,108 @@ function updatePriceAndLink() {
 
   let whatsappText = `Hi, I would like to order ${currentWeight} of ${cake.title} (₹${finalPrice}).`;
   if (customMessage) {
-    whatsappText += `\n*Message on Cake:* "${customMessage}"`;
+    whatsappText += `\n*Message on Cake Top:* "${customMessage}"`;
   }
 
   document.getElementById("whatsappLink").href = `https://wa.me/919999999999?text=${encodeURIComponent(whatsappText)}`;
 }
 
-// Live 3D Texture Projection Engine
-async function updateMessageOnCake() {
+// Real-Texture Top-Cap Piping Engine
+async function updateMessageOnCakeTop() {
   updatePriceAndLink();
 
   const text = document.getElementById("cakeMessage").value.trim();
   const viewer = document.getElementById("viewer");
 
-  // Ensure 3D model materials are fully loaded
   if (!viewer.model || !viewer.model.materials || viewer.model.materials.length === 0) return;
 
-  // Create an offscreen HTML5 canvas to generate dynamic 2D text texture
+  const currentCake = cakes[currentCakeId];
+  
+  // Find top material (or target primary base material)
+  const topMaterial = viewer.model.materials.find(m => m.name.toLowerCase().includes("top") || m.name.toLowerCase().includes("icing") || m.name.toLowerCase().includes("frosting")) || viewer.model.materials[0];
+
+  if (!topMaterial || !topMaterial.pbrMetallicRoughness) return;
+
+  // Cache base texture so real model colors are never lost
+  if (!originalTextures[currentCakeId]) {
+    originalTextures[currentCakeId] = topMaterial.pbrMetallicRoughness.baseColorTexture ? topMaterial.pbrMetallicRoughness.baseColorTexture.texture : null;
+  }
+
+  // If input is empty, restore pure original realistic 3D texture
+  if (!text) {
+    if (originalTextures[currentCakeId]) {
+      topMaterial.pbrMetallicRoughness.baseColorTexture.setTexture(originalTextures[currentCakeId]);
+    }
+    return;
+  }
+
+  // Create High-Res 2K Canvas
   const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 1024;
+  canvas.width = 2048;
+  canvas.height = 2048;
   const ctx = canvas.getContext("2d");
 
-  // Fill transparent / frosting background base
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Create Base Image from original texture to preserve real color depth
+  const baseImg = new Image();
+  const originalTextureUrl = topMaterial.pbrMetallicRoughness.baseColorTexture ? topMaterial.pbrMetallicRoughness.baseColorTexture.texture.source.uri : null;
 
-  if (text) {
-    ctx.fillStyle = "#ffffff"; 
-    ctx.font = "bold 64px Arial";
+  const drawTextOnTop = () => {
+    // 1. Draw original real-color background texture if available
+    if (originalTextureUrl && baseImg.complete && baseImg.width > 0) {
+      ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+    }
+
+    // 2. Position Text EXCLUSIVELY on the center top circle (Top UV Area: Y ~ 25% - 40%)
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height * 0.32; // Targets the top-face UV mapping zone
+
+    ctx.save();
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    // Draw text with a soft shadow for chocolate / cream depth
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowBlur = 10;
-    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-  }
+    // Dynamic Font Sizing based on string length
+    let fontSize = 90;
+    if (text.length > 15) fontSize = 70;
+    if (text.length > 22) fontSize = 55;
 
-  // Convert canvas to image URL & create dynamic model texture
-  const dataUrl = canvas.toDataURL("image/png");
-  try {
-    const texture = await viewer.createTexture(dataUrl);
-    
-    // Inject dynamic texture onto primary frosting material
-    const material = viewer.model.materials[0];
-    if (material && material.pbrMetallicRoughness && material.pbrMetallicRoughness.baseColorTexture) {
-      material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-    }
-  } catch (err) {
-    console.log("3D Texture update initialized:", err);
+    ctx.font = `bold ${fontSize}px "Georgia", "Times New Roman", serif`;
+
+    // 3. Real 3D Cream/Chocolate Piping Effect (Multi-Layer Shadows + Bevel)
+    // Dark Shadow (Sinks text into icing)
+    ctx.shadowColor = "rgba(40, 15, 5, 0.65)";
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetX = 4;
+    ctx.shadowOffsetY = 6;
+
+    // Outer Cream Piping Stroke
+    ctx.strokeStyle = "rgba(60, 20, 5, 0.8)";
+    ctx.lineWidth = 10;
+    ctx.strokeText(text, centerX, centerY);
+
+    // Inner Cream Fill (Photorealistic Piping Color)
+    ctx.shadowColor = "transparent";
+    ctx.fillStyle = currentCake.icingColor;
+    ctx.fillText(text, centerX, centerY);
+
+    // Subtle Highlight for 3D Cream Gloss
+    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.fillText(text, centerX - 2, centerY - 2);
+
+    ctx.restore();
+
+    // 4. Inject back into model-viewer
+    const dataUrl = canvas.toDataURL("image/png");
+    viewer.createTexture(dataUrl).then(texture => {
+      topMaterial.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+    });
+  };
+
+  if (originalTextureUrl) {
+    baseImg.crossOrigin = "anonymous";
+    baseImg.src = originalTextureUrl;
+    baseImg.onload = drawTextOnTop;
+  } else {
+    drawTextOnTop();
   }
 }
 
@@ -450,10 +503,8 @@ function changeWeight(weight, btn) {
   currentWeight = weight;
   const viewer = document.getElementById("viewer");
 
-  // Apply updated reduced scale factors
   viewer.setAttribute("scale", scales[weight].scale);
 
-  // Synchronize state across normal UI buttons and AR floating buttons
   document.querySelectorAll(".weight-btn, .ar-weight-btn").forEach(b => {
     if (b.innerText.toLowerCase().replace(/\s/g, '') === weight) {
       b.classList.add("active");
@@ -468,7 +519,7 @@ function changeWeight(weight, btn) {
 document.addEventListener("DOMContentLoaded", function() {
   const viewer = document.getElementById("viewer");
   viewer.addEventListener("load", () => {
-    updateMessageOnCake();
+    updateMessageOnCakeTop();
   });
 });
 
