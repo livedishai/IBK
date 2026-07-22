@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>New Indian Bakery Coonoor | Premium Cake Showcase</title>
+
+<script type="module"
+src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+</script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:#f6f6f6;
+color:#222;
+display:flex;
+flex-direction:column;
+align-items:center;
+min-height:100vh;
+}
+
+header{
+width:100%;
+background:#1b4332;
+padding:20px;
+text-align:center;
+color:white;
+box-shadow:0 3px 10px rgba(0,0,0,.15);
+}
+
+header h1{
+font-size:30px;
+letter-spacing:2px;
+}
+
+header p{
+margin-top:8px;
+opacity:.9;
+}
+
+.viewer{
+position: relative;
+width:92%;
+max-width:520px;
+height:500px;
+background:white;
+margin-top:25px;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+
+model-viewer{
+width:100%;
+height:100%;
+background:white;
+transition: opacity 0.2s ease-in-out;
+}
+
+/* Base AR Button */
+#ar-button{
+position:absolute;
+left:50%;
+bottom:18px;
+transform:translateX(-50%);
+border:none;
+outline:none;
+background:#1b4332;
+color:white;
+padding:12px 24px;
+font-size:15px;
+font-weight:bold;
+border-radius:30px;
+cursor:pointer;
+box-shadow:0 4px 10px rgba(0,0,0,.25);
+z-index: 10;
+}
+
+/* Floating AR Controls Inside Web & AR view */
+.ar-weight-controls {
+position: absolute;
+top: 15px;
+right: 15px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+z-index: 10;
+}
+
+.ar-weight-btn {
+background: rgba(27, 67, 50, 0.85);
+color: white;
+border: 1px solid rgba(255, 255, 255, 0.4);
+padding: 8px 14px;
+border-radius: 20px;
+font-size: 13px;
+font-weight: bold;
+cursor: pointer;
+backdrop-filter: blur(4px);
+transition: all 0.2s ease;
+}
+
+.ar-weight-btn.active {
+background: #d35400;
+border-color: white;
+transform: scale(1.05);
+}
+
+.details{
+width:90%;
+max-width:500px;
+padding:20px;
+text-align:center;
+}
+
+.details h2{
+font-size:28px;
+color:#1b4332;
+margin-bottom:12px;
+}
+
+.details p{
+font-size:16px;
+line-height:1.7;
+color:#555;
+}
+
+/* Section Titles */
+.section-label {
+font-size: 14px;
+font-weight: bold;
+color: #1b4332;
+margin-top: 15px;
+margin-bottom: 8px;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.selector{
+width:90%;
+max-width:500px;
+display:flex;
+gap:10px;
+margin-top:5px;
+}
+
+.selector button{
+flex:1;
+padding:12px;
+border-radius:12px;
+border:2px solid #ddd;
+background:white;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+transition:.3s;
+}
+
+.selector button:hover{
+background:#f2f2f2;
+}
+
+.selector button.active{
+background:#1b4332;
+color:white;
+border-color:#1b4332;
+}
+
+.price{
+margin-top:20px;
+font-size:28px;
+font-weight:bold;
+color:#d35400;
+}
+
+.whatsapp{
+margin-top:25px;
+margin-bottom: 25px;
+}
+
+.whatsapp a{
+display:inline-block;
+padding:15px 30px;
+background:#25D366;
+color:white;
+font-size:17px;
+font-weight:bold;
+text-decoration:none;
+border-radius:35px;
+box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+footer{
+margin-top:auto;
+width:100%;
+padding:18px;
+background:#1b4332;
+text-align:center;
+color:white;
+font-size:14px;
+}
+
+@media(max-width:600px){
+.viewer{
+height:380px;
+}
+
+header h1{
+font-size:24px;
+}
+
+.details h2{
+font-size:22px;
+}
+
+.selector{
+flex-direction:row;
+}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>NEW INDIAN BAKERY</h1>
+<p>Est.1985 • Coonoor • Nilgiris</p>
+</header>
+
+<div class="viewer">
+
+<model-viewer
+id="viewer"
+src="./3d model/BirthdayCake1.glb"
+ios-src="./3d model/BirthdayCake1.usdz"
+alt="Birthday Cake"
+camera-controls
+auto-rotate
+shadow-intensity="1"
+exposure="1"
+environment-image="neutral"
+scale="1 1 1"
+ar
+ar-modes="scene-viewer quick-look webxr">
+
+<!-- AR Mode Button -->
+<button slot="ar-button" id="ar-button">
+View in Your Space
+</button>
+
+<!-- Floating Weight Switcher Buttons (Visible on 3D Viewer & AR) -->
+<div class="ar-weight-controls">
+  <button class="ar-weight-btn active" onclick="changeWeight('1kg', this)">1 kg</button>
+  <button class="ar-weight-btn" onclick="changeWeight('2kg', this)">2 kg</button>
+  <button class="ar-weight-btn" onclick="changeWeight('3kg', this)">3 kg</button>
+</div>
+
+</model-viewer>
+
+</div>
+
+<div class="details">
+
+<h2 id="cakeTitle">Premium Birthday Cake</h2>
+
+<p id="cakeDesc">
+Experience our delicious premium birthday cake in interactive 3D. 
+Rotate, zoom and place it in your own space using Augmented Reality before ordering.
+</p>
+
+<!-- Weight Selector -->
+<div class="section-label">Select Size</div>
+<div class="selector weight-selector">
+  <button class="weight-btn active" onclick="changeWeight('1kg', this)">1 kg</button>
+  <button class="weight-btn" onclick="changeWeight('2kg', this)">2 kg</button>
+  <button class="weight-btn" onclick="changeWeight('3kg', this)">3 kg</button>
+</div>
+
+<!-- Cake Type Selector -->
+<div class="section-label">Select Flavor</div>
+<div class="selector cake-selector">
+  <button class="cake-btn active" onclick="changeCake(1, this)">🎂 Birthday Cake 1</button>
+  <button class="cake-btn" onclick="changeCake(2, this)">🎂 Birthday Cake 2</button>
+</div>
+
+<div class="price" id="cakePrice">
+₹799
+</div>
+
+</div>
+
+<div class="whatsapp">
+<a id="whatsappLink" href="https://wa.me/919999999999?text=Hi%20I%20would%20like%20to%20order%201kg%20of%20Premium%20Birthday%20Cake." target="_blank">
+Order on WhatsApp
+</a>
+</div>
+
+<script>
+
+// Scale definitions & price multipliers
+const scales = {
+  "1kg": { scale: "1 1 1", multiplier: 1.0 },
+  "2kg": { scale: "1.25 1.25 1.25", multiplier: 1.8 },
+  "3kg": { scale: "1.45 1.45 1.45", multiplier: 2.5 }
+};
+
+const cakes = {
+  1: {
+    title: "Premium Birthday Cake",
+    desc: "Experience our delicious premium birthday cake in interactive 3D. Rotate, zoom and place it in your own space using Augmented Reality before ordering.",
+    basePrice: 799,
+    glb: "./3d model/BirthdayCake1.glb",
+    usdz: "./3d model/BirthdayCake1.usdz"
+  },
+  2: {
+    title: "Chocolate Celebration Cake",
+    desc: "Rich chocolate premium cake with elegant decorations. View it in full 3D and place it on your table using AR before placing your order.",
+    basePrice: 999,
+    glb: "./3d model/BirthdayCake2.glb",
+    usdz: "./3d model/BirthdayCake2.usdz"
+  }
+};
+
+let currentCakeId = 1;
+let currentWeight = "1kg";
+
+function updatePriceAndLink() {
+  const cake = cakes[currentCakeId];
+  const multiplier = scales[currentWeight].multiplier;
+  const finalPrice = Math.round(cake.basePrice * multiplier);
+
+  document.getElementById("cakePrice").innerHTML = `₹${finalPrice}`;
+
+  // Update WhatsApp text message automatically
+  const message = encodeURIComponent(`Hi, I would like to order ${currentWeight} of ${cake.title} (₹${finalPrice}).`);
+  document.getElementById("whatsappLink").href = `https://wa.me/919999999999?text=${message}`;
+}
+
+function changeCake(id, btn) {
+  currentCakeId = id;
+  const cake = cakes[id];
+  const viewer = document.getElementById("viewer");
+
+  viewer.style.opacity = "0";
+
+  setTimeout(() => {
+    viewer.src = cake.glb;
+    viewer.setAttribute("ios-src", cake.usdz);
+
+    document.getElementById("cakeTitle").innerHTML = cake.title;
+    document.getElementById("cakeDesc").innerHTML = cake.desc;
+
+    document.querySelectorAll(".cake-selector button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    updatePriceAndLink();
+    viewer.style.opacity = "1";
+  }, 200);
+}
+
+function changeWeight(weight, btn) {
+  currentWeight = weight;
+  const viewer = document.getElementById("viewer");
+
+  // Apply real-world physical scale multiplier to 3D model
+  viewer.setAttribute("scale", scales[weight].scale);
+
+  // Sync active states across both bottom buttons and overlay AR buttons
+  document.querySelectorAll(".weight-btn, .ar-weight-btn").forEach(b => {
+    if (b.innerText.toLowerCase().replace(/\s/g, '') === weight) {
+      b.classList.add("active");
+    } else {
+      b.classList.remove("active");
+    }
+  });
+
+  updatePriceAndLink();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  const viewer = document.getElementById("viewer");
+
+  viewer.addEventListener("load", function() {
+    console.log("3D Model loaded successfully.");
+  });
+
+  viewer.addEventListener("error", function() {
+    console.error("Unable to load 3D model. Please verify file paths.");
+  });
+});
+
+</script>
+
+<footer>
+© 2026 New Indian Bakery, Coonoor • Premium Cake AR Experience
+</footer> 
+
+</body>
+</html>
