@@ -247,7 +247,7 @@ auto-rotate
 shadow-intensity="1"
 exposure="1"
 environment-image="neutral"
-scale="1 1 1"
+scale="0.4 0.4 0.4"
 ar
 ar-modes="webxr quick-look scene-viewer"
 ar-scale="fixed">
@@ -306,11 +306,14 @@ Order on WhatsApp
 
 <script>
 
-// Absolute physical scale factors (1kg = 1.0, 2kg = 1.26x volumetric scale, 3kg = 1.44x volumetric scale)
+// Scale mapping reduced by 60% overall across all sizes:
+// 1kg Base: 0.4 0.4 0.4
+// 2kg (1.26x): 0.504 0.504 0.504
+// 3kg (1.44x): 0.576 0.576 0.576
 const scales = {
-  "1kg": { scale: "1 1 1", multiplier: 1.0 },
-  "2kg": { scale: "1.26 1.26 1.26", multiplier: 1.8 },
-  "3kg": { scale: "1.44 1.44 1.44", multiplier: 2.5 }
+  "1kg": { scale: "0.4 0.4 0.4", multiplier: 1.0 },
+  "2kg": { scale: "0.504 0.504 0.504", multiplier: 1.8 },
+  "3kg": { scale: "0.576 0.576 0.576", multiplier: 2.5 }
 };
 
 const cakes = {
@@ -370,7 +373,7 @@ function changeWeight(weight, btn) {
   currentWeight = weight;
   const viewer = document.getElementById("viewer");
 
-  // Force physical 1:1 real-world size change
+  // Apply updated reduced scale factors
   viewer.setAttribute("scale", scales[weight].scale);
 
   // Synchronize state across normal UI buttons and AR floating buttons
