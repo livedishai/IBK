@@ -123,30 +123,6 @@ header .tagline{
   text-align:center;
 }
 
-/* Trust badges row */
-.badges{
-  width:92%;
-  max-width:520px;
-  margin-top:18px;
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.badge{
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(217,169,52,.4);
-  color:var(--parchment);
-  font-size:12px;
-  font-weight:600;
-  padding:7px 12px;
-  border-radius:20px;
-  backdrop-filter:blur(3px);
-  display:flex;
-  align-items:center;
-  gap:5px;
-}
-
 /* ---------- VIEWER ---------- */
 .viewer{
   position:relative;
@@ -563,12 +539,6 @@ footer{
   <div class="eyebrow">Nilgiris Hill Bakery</div>
   <h1>LIVE DISH-AI</h1>
   <p class="tagline">Coonoor's oven, since before the mist had a name for itself</p>
-
-  <div class="badges">
-    <div class="badge">⭐ 4.8 · 1,200+ orders</div>
-    <div class="badge">🚚 Same-day in Coonoor</div>
-    <div class="badge">🎂 39 years baking</div>
-  </div>
 </header>
 
 <div class="viewer">
@@ -749,7 +719,6 @@ function sendOrderToGoogleSheet() {
     price: money(finalPrice)
   };
 
-  // Using text/plain content type prevents CORS errors in Google Apps Script doPost
   fetch(GOOGLE_SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",
