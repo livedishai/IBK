@@ -257,16 +257,6 @@ select:focus-visible{
   padding:22px 4px;
   text-align:center;
 }
-.details h2{
-  font-size:26px;
-  color:var(--pine);
-  margin-bottom:8px;
-}
-.details p{
-  font-size:15px;
-  line-height:1.65;
-  color:var(--ink-soft);
-}
 
 .section-label{
   font-size:12px;
@@ -311,6 +301,7 @@ select:focus-visible{
 /* message + date row */
 .field-box{width:100%;margin-top:4px;}
 .field-box input[type="text"],
+.field-box input[type="tel"],
 .field-box input[type="date"],
 .field-box select{
   width:100%;
@@ -516,7 +507,6 @@ footer{
 @media(max-width:600px){
   .viewer{height:370px;}
   header h1{font-size:24px;}
-  .details h2{font-size:21px;}
   .stamp{width:60px;height:60px;top:12px;right:12px;}
 }
 
@@ -577,12 +567,6 @@ footer{
 
 <div class="details">
 
-  <h2 id="cakeTitle">Premium Birthday Cake</h2>
-  <p id="cakeDesc">
-    Experience our delicious premium birthday cake in interactive 3D.
-    Rotate, zoom and place it on your table in real physical size using Augmented Reality.
-  </p>
-
   <div class="section-label">Select Weight</div>
   <div class="selector weight-selector">
     <button class="weight-btn active" onclick="changeWeight('1kg', this)">1 kg</button>
@@ -620,6 +604,16 @@ footer{
         <option value="Afternoon (12–4)">Afternoon · 12–4</option>
         <option value="Evening (4–7)">Evening · 4–7</option>
       </select>
+    </div>
+  </div>
+
+  <div class="section-label">Customer Details</div>
+  <div class="field-box two-col">
+    <div>
+      <input type="text" id="customerName" placeholder="Your Name" oninput="updatePriceAndLink()">
+    </div>
+    <div>
+      <input type="tel" id="customerPhone" placeholder="Mobile Number" oninput="updatePriceAndLink()">
     </div>
   </div>
 
@@ -703,6 +697,8 @@ function sendOrderToGoogleSheet() {
   const finalPrice = basePrice + (hasCandles ? CANDLE_ADDON_PRICE : 0);
 
   const payload = {
+    customerName: document.getElementById("customerName").value.trim() || "N/A",
+    customerPhone: document.getElementById("customerPhone").value.trim() || "N/A",
     cake: cake.title,
     weight: currentWeight,
     occasion: occasions[currentOccasion].label,
@@ -732,7 +728,6 @@ const cakes = {
   1: {
     title: "Premium Birthday Cake",
     shortLabel: "Vanilla Bean",
-    desc: "Experience our delicious premium vanilla bean cake in interactive 3D. Place it on your table in real physical size using Augmented Reality.",
     basePrice: 799,
     glb: "./3d model/BirthdayCake1.glb",
     usdz: "./3d model/BirthdayCake1.usdz"
@@ -740,7 +735,6 @@ const cakes = {
   2: {
     title: "Chocolate Celebration Cake",
     shortLabel: "Dark Chocolate",
-    desc: "Rich dark chocolate premium cake with elegant decorations. View it in 1:1 real scale on your table before placing your order.",
     basePrice: 999,
     glb: "./3d model/BirthdayCake2.glb",
     usdz: "./3d model/BirthdayCake2.usdz"
@@ -789,9 +783,13 @@ function updatePriceAndLink() {
   const customMessage = document.getElementById("cakeMessage").value.trim();
   const deliveryDate = document.getElementById("deliveryDate").value;
   const deliverySlot = document.getElementById("deliverySlot").value;
+  const name = document.getElementById("customerName").value.trim();
+  const phone = document.getElementById("customerPhone").value.trim();
   const occ = occasions[currentOccasion];
 
   let whatsappText = `Hi, I'd like to order a ${currentWeight} ${cake.title} (${occ.label}) — ${money(finalPrice)}.`;
+  if (name) whatsappText += `\n*Name:* ${name}`;
+  if (phone) whatsappText += `\n*Mobile:* ${phone}`;
   if (customMessage) whatsappText += `\n*Message on cake top:* "${customMessage}"`;
   if (hasCandles) whatsappText += `\n*Add-on:* Candles & topper`;
   if (deliveryDate) whatsappText += `\n*Delivery date:* ${deliveryDate}`;
@@ -844,9 +842,6 @@ function changeCake(id, btn) {
   setTimeout(() => {
     viewer.src = cake.glb;
     viewer.setAttribute("ios-src", cake.usdz);
-
-    document.getElementById("cakeTitle").innerText = cake.title;
-    document.getElementById("cakeDesc").innerText = cake.desc;
 
     document.querySelectorAll(".cake-selector button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
