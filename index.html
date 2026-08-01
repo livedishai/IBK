@@ -791,6 +791,10 @@ function updatePriceAndLink() {
   const phone = document.getElementById("customerPhone").value.trim();
   const occ = occasions[currentOccasion];
 
+// Construct the full absolute URL for the cake photo thumbnail
+  const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+  const fullPhotoUrl = baseUrl + cake.photo.replace(/^\.\//, '');
+
   let whatsappText = `Hi, I'd like to order a ${currentWeight} ${cake.title} (${occ.label}) — ${money(finalPrice)}.`;
   if (name) whatsappText += `\n*Name:* ${name}`;
   if (phone) whatsappText += `\n*Mobile:* ${phone}`;
@@ -798,7 +802,7 @@ function updatePriceAndLink() {
   if (hasCandles) whatsappText += `\n*Add-on:* Candles & topper`;
   if (deliveryDate) whatsappText += `\n*Delivery date:* ${deliveryDate}`;
   whatsappText += `\n*Delivery slot:* ${deliverySlot}`;
-  whatsappText += `\n*Cake photo:* ${cake.photo}`;   // ← NEW: WhatsApp will preview this as a thumbnail
+  whatsappText += `\n*Cake photo:* ${fullPhotoUrl}`;
 
   const link = `https://wa.me/917019743880?text=${encodeURIComponent(whatsappText)}`;
   
