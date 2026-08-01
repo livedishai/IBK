@@ -700,7 +700,9 @@ function sendOrderToGoogleSheet() {
     customerName: document.getElementById("customerName").value.trim() || "N/A",
     customerPhone: document.getElementById("customerPhone").value.trim() || "N/A",
     cake: cake.title,
-    weight: currentWeight,
+    flavor: cake.shortLabel,
+    photoUrl: cake.photo,   // ← NEW
+    weight: currentWeight,,
     occasion: occasions[currentOccasion].label,
     message: document.getElementById("cakeMessage").value.trim() || "N/A",
     addons: hasCandles ? "Candles & Topper" : "None",
