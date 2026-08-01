@@ -696,12 +696,16 @@ function sendOrderToGoogleSheet() {
   const hasCandles = document.getElementById("candleAddon").checked;
   const finalPrice = basePrice + (hasCandles ? CANDLE_ADDON_PRICE : 0);
 
+  // Construct absolute URL for the photo link
+  const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+  const fullPhotoUrl = baseUrl + cake.photo.replace(/^\.\//, '');
+
   const payload = {
     customerName: document.getElementById("customerName").value.trim() || "N/A",
     customerPhone: document.getElementById("customerPhone").value.trim() || "N/A",
     cake: cake.title,
     flavor: cake.shortLabel,
-    photoUrl: cake.photo,   // ← NEW
+    photoUrl: fullPhotoUrl, // Send full URL
     weight: currentWeight,
     occasion: occasions[currentOccasion].label,
     message: document.getElementById("cakeMessage").value.trim() || "N/A",
@@ -718,7 +722,6 @@ function sendOrderToGoogleSheet() {
     body: JSON.stringify(payload)
   }).catch(error => console.error("Error logging order:", error));
 }
-
 // --- Original Cake Config & State ---
 const scales = {
   "1kg": { scale: "0.4 0.4 0.4", multiplier: 1.0 },
