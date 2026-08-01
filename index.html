@@ -702,7 +702,7 @@ function sendOrderToGoogleSheet() {
     cake: cake.title,
     flavor: cake.shortLabel,
     photoUrl: cake.photo,   // ← NEW
-    weight: currentWeight,,
+    weight: currentWeight,
     occasion: occasions[currentOccasion].label,
     message: document.getElementById("cakeMessage").value.trim() || "N/A",
     addons: hasCandles ? "Candles & Topper" : "None",
