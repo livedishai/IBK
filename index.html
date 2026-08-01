@@ -794,6 +794,7 @@ function updatePriceAndLink() {
   if (hasCandles) whatsappText += `\n*Add-on:* Candles & topper`;
   if (deliveryDate) whatsappText += `\n*Delivery date:* ${deliveryDate}`;
   whatsappText += `\n*Delivery slot:* ${deliverySlot}`;
+  whatsappText += `\n*Cake photo:* ${cake.photo}`;   // ← NEW: WhatsApp will preview this as a thumbnail
 
   const link = `https://wa.me/917019743880?text=${encodeURIComponent(whatsappText)}`;
   
